@@ -91,8 +91,6 @@ set(LIBVFSPP_PUBLIC_HDRS
     ${LIBVFSPP_PUBLIC_HDRS_DIR}/CFileInfo.h
     ${LIBVFSPP_PUBLIC_HDRS_DIR}/CMemoryFile.h
     ${LIBVFSPP_PUBLIC_HDRS_DIR}/CMemoryFileSystem.h
-    ${LIBVFSPP_PUBLIC_HDRS_DIR}/CNativeFile.h
-    ${LIBVFSPP_PUBLIC_HDRS_DIR}/CNativeFileSystem.h
     ${LIBVFSPP_PUBLIC_HDRS_DIR}/CVirtualFileSystem.h
     ${LIBVFSPP_PUBLIC_HDRS_DIR}/CZipFile.h
     ${LIBVFSPP_PUBLIC_HDRS_DIR}/CZipFileSystem.h
@@ -110,8 +108,6 @@ set(LIBVFSPP_SRCS
     ${LIBVFSPP_SRCS_DIR}/CFileInfo.cpp
     ${LIBVFSPP_SRCS_DIR}/CMemoryFile.cpp
     ${LIBVFSPP_SRCS_DIR}/CMemoryFileSystem.cpp
-    ${LIBVFSPP_SRCS_DIR}/CNativeFile.cpp
-    ${LIBVFSPP_SRCS_DIR}/CNativeFileSystem.cpp
     ${LIBVFSPP_SRCS_DIR}/CStringUtilsVFS.cpp
     ${LIBVFSPP_SRCS_DIR}/CVirtualFileSystem.cpp
     ${LIBVFSPP_SRCS_DIR}/CZipFile.cpp
@@ -125,8 +121,6 @@ if (${PLATFORM} STREQUAL "macOS" OR
     ${PLATFORM} STREQUAL "watchOS")
     set(CMAKE_MACOSX_RPATH 1)
 endif()
-
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -stdlib=libc++ -fno-rtti -fno-exceptions -g -Wall")
 
 add_library(${PROJECT_NAME} STATIC ${LIBVFSPP_SRCS} ${LIBVFSPP_HDRS})
 
