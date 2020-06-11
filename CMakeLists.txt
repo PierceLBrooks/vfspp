@@ -45,19 +45,7 @@ if (${PLATFORM} STREQUAL "macOS" OR
     set(ZLIB_C_FLAGS " -Wno-error-implicit-function-declaration")
 endif()
 
-ExternalProject_Add(zlib
-    SOURCE_DIR ${ZLIB_DIR}
-    PREFIX ${CMAKE_INSTALL_PREFIX}
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    PATCH_COMMAND COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/external/patches/zlib/CMakeLists.txt ${CMAKE_SOURCE_DIR}/external/zlib/CMakeLists.txt
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}
-               -DCMAKE_C_COMPILER_WORKS=${CMAKE_C_COMPILER_WORKS} 
-               -DCMAKE_C_FLAGS=${ZLIB_C_FLAGS} 
-               -DCMAKE_XCODE_EFFECTIVE_PLATFORMS=${CMAKE_XCODE_EFFECTIVE_PLATFORMS} 
-               -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
-               -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} 
-               -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-)
+add_subdirectory(external)
 
 #============================================================================
 # minizip
@@ -86,15 +74,10 @@ if(WIN32)
 endif()
 
 add_library(minizip ${MINIZIP_SRCS} ${MINIZIP_HDRS})
-add_dependencies(minizip zlib)
+add_dependencies(minizip zlibstatic)
 link_library(minizip ${ZLIB_NAME})
 
 target_include_directories(minizip PUBLIC ${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}/include)
-set_target_properties(minizip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX}/minizip/lib
-                                         ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_INSTALL_PREFIX}/minizip/lib
-                                         ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_INSTALL_PREFIX}/minizip/lib
-                                         ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_INSTALL_PREFIX}/minizip/lib
-                                         ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_INSTALL_PREFIX}/minizip/lib)
 
 #============================================================================
 # vfspp
@@ -146,43 +129,12 @@ endif()
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -stdlib=libc++ -fno-rtti -fno-exceptions -g -Wall")
 
 add_library(${PROJECT_NAME}thin STATIC ${LIBVFSPP_SRCS} ${LIBVFSPP_HDRS})
-set_target_properties(${PROJECT_NAME}thin PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib
-                                                     ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib
-                                                     ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib
-                                                     ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib
-                                                     ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib)
 
 target_include_directories(${PROJECT_NAME}thin PUBLIC ${LIBVFSPP_PUBLIC_HDRS_DIR})
 target_include_directories(${PROJECT_NAME}thin PUBLIC ${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}/include)
 target_include_directories(${PROJECT_NAME}thin PUBLIC ${MINIZIP_DIR})
 add_dependencies(${PROJECT_NAME}thin minizip)
 link_library(${PROJECT_NAME}thin minizip)
-
-# Create big static lib
-if (${PLATFORM} STREQUAL "macOS" OR
-    ${PLATFORM} STREQUAL "iOS" OR
-    ${PLATFORM} STREQUAL "tvOS" OR
-    ${PLATFORM} STREQUAL "watchOS")
-
-    add_custom_command(TARGET ${PROJECT_NAME}thin POST_BUILD
-                       COMMAND rm -f ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX}
-                       COMMAND libtool -static -o ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX} 
-                                                  ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}thin${LIB_SUFFIX}
-                                                  ${CMAKE_INSTALL_PREFIX}/minizip/lib/${LIB_PREFIX}minizip${LIB_SUFFIX}
-                                                  ${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}/lib/${LIB_PREFIX}${ZLIB_NAME}${LIB_SUFFIX})
-elseif (${PLATFORM} STREQUAL "Linux" OR
-        ${PLATFORM} STREQUAL "Android")
-
-    add_custom_command(TARGET ${PROJECT_NAME}thin POST_BUILD
-                       COMMAND rm -f ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX}
-                       COMMAND ${CMAKE_AR} crsT ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX} 
-                                                ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}thin${LIB_SUFFIX}
-                                                ${CMAKE_INSTALL_PREFIX}/minizip/lib/${LIB_PREFIX}minizip${LIB_SUFFIX}
-                                                ${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}/lib/${LIB_PREFIX}${ZLIB_NAME}${LIB_SUFFIX}
-                       COMMAND ${CMAKE_RANLIB} ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX} )
-elseif (${PLATFORM} STREQUAL "Windows")
-    # TOOD:
-endif()
 
 # Installation
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
