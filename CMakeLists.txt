@@ -128,13 +128,13 @@ endif()
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -stdlib=libc++ -fno-rtti -fno-exceptions -g -Wall")
 
-add_library(${PROJECT_NAME}thin STATIC ${LIBVFSPP_SRCS} ${LIBVFSPP_HDRS})
+add_library(${PROJECT_NAME} STATIC ${LIBVFSPP_SRCS} ${LIBVFSPP_HDRS})
 
-target_include_directories(${PROJECT_NAME}thin PUBLIC ${LIBVFSPP_PUBLIC_HDRS_DIR})
-target_include_directories(${PROJECT_NAME}thin PUBLIC ${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}/include)
-target_include_directories(${PROJECT_NAME}thin PUBLIC ${MINIZIP_DIR})
-add_dependencies(${PROJECT_NAME}thin minizip)
-link_library(${PROJECT_NAME}thin minizip)
+target_include_directories(${PROJECT_NAME} PUBLIC ${LIBVFSPP_PUBLIC_HDRS_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/${ZLIB_NAME}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${MINIZIP_DIR})
+add_dependencies(${PROJECT_NAME} minizip)
+link_library(${PROJECT_NAME} minizip)
 
 # Installation
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
@@ -153,7 +153,7 @@ if(WITH_EXAMPLES)
     set(EXAMPLES_DIR examples)
 
     add_executable(example ${EXAMPLES_DIR}/example.cpp)
-    add_dependencies(example ${PROJECT_NAME}thin)
-    link_library(example ${PROJECT_NAME}thin)
+    add_dependencies(example ${PROJECT_NAME})
+    link_library(example ${PROJECT_NAME})
     target_include_directories(example PUBLIC ${LIBVFSPP_PUBLIC_HDRS_DIR})
 endif()
