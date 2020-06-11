@@ -136,6 +136,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${MINIZIP_DIR})
 add_dependencies(${PROJECT_NAME} minizip)
 link_library(${PROJECT_NAME} minizip)
 
+# Installation
+install(TARGETS ${PROJECT_NAME} minizip)
+
 #============================================================================
 # Example binaries
 #============================================================================
