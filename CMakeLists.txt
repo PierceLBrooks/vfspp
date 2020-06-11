@@ -136,15 +136,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${MINIZIP_DIR})
 add_dependencies(${PROJECT_NAME} minizip)
 link_library(${PROJECT_NAME} minizip)
 
-# Installation
-if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
-    install(FILES ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib/${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX}
-            DESTINATION "${INSTALL_LIB_DIR}")
-endif()
-if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
-    install(FILES ${LIBVFSPP_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}")
-endif()
-
 #============================================================================
 # Example binaries
 #============================================================================
