@@ -133,6 +133,7 @@ add_dependencies(${PROJECT_NAME} minizip)
 link_library(${PROJECT_NAME} minizip)
 
 # Installation
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${LIBVFSPP_PUBLIC_HDRS}")
 install(TARGETS ${PROJECT_NAME} minizip)
 
 #============================================================================
